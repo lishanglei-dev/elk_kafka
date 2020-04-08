@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<configuration scan="true" scanPeriod="60 seconds" debug="false">
+    <appender name="KAFKA" class="com.example.kafka.appender.KafkaAppender">
+        <bootstrapServers>192.168.8.104:9093,192.168.8.104:9092,192.168.8.104:9094</bootstrapServers>
+    </appender>
+    <property name="LOG_HOME" value="/tmp/logs/mservice-zuul"/>
+
+    <!-- Console 输出设置 -->
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder charset="UTF-8">
+            <!--  显示毫秒数
+                <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger - %msg%n</pattern>-->
+            <pattern>%d{HH:mm:ss} %-5level [%thread] %logger - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <!-- 每天产生一个文件 -->
+    <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <!--日志文件输出的文件名-->
+            <FileNamePattern>${LOG_HOME}/mservice-zuul.%d{yyyy-MM-dd}.log</FileNamePattern>
+            <!--日志文件保留天数-->
+            <MaxHistory>15</MaxHistory>
+        </rollingPolicy>
+        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+            <!--格式化输出：%d表示日期，%thread表示线程名，%-5level：级别从左显示5个字符宽度%msg：日志消息，%n是换行符-->
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{50} - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <!--将上面的appender添加到root-->
+    <root level="INFO">
+        <appender-ref ref="STDOUT"/>
+        <appender-ref ref="FILE"/>
+    </root>
+    <logger name="kafka_logger" additivity="false">
+        <appender-ref ref="STDOUT"/>
+        <appender-ref ref="FILE"/>
+        <appender-ref ref="KAFKA"/>
+    </logger>
+
+</configuration>
